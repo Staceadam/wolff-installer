@@ -1,0 +1,14 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    # this is the network interface  name 
+    <INTERFACE_NAME>:
+      dhcp4: no
+      addresses:
+      # this needs to be the current address assigned to the machine 
+        - <IP_ADDRESS>/24
+      # this needs to be the current address that is assigned to the router 
+      gateway4: <GATEWAY_IP>
+      nameservers:
+        addresses: [1.1.1.1, 1.0.0.1]
