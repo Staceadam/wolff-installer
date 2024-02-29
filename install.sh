@@ -60,7 +60,7 @@ check_and_install "htop" "sudo apt install htop -y"
 check_and_install "git" "sudo apt install git -y"
 
 # Check if fail2ban is installed
-check_and_install "fail2ban" "sudo apt install fail2ban -y"
+check_and_install "fail2ban-client" "sudo apt install fail2ban -y"
 
 # Check if ufw is installed
 check_and_install "ufw" "sudo apt install ufw -y"
@@ -69,7 +69,7 @@ check_and_install "ufw" "sudo apt install ufw -y"
 check_and_install "rg" "sudo apt install ripgrep -y"
 
 # Check if nginx is installed
-check_and_install "nginx" "sudo apt install ripgrep -y"
+check_and_install "nginx" "sudo apt install nginx -y"
 
 # Check if prometheus is installed
 check_and_install "prometheus" "sudo apt install prometheus -y"
