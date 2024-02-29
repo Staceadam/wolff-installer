@@ -16,13 +16,13 @@ function alert() {
   local message="$2"
   
   if [[ "$type" == "warning" ]]; then
-    echo "${color_red}${message}${color_reset}"
+    echo -e "${color_red}${message}${color_reset}"
   elif [[ "$type" == "success" ]]; then
-    echo "${color_green}${message}${color_reset}"
+    echo -e "${color_green}${message}${color_reset}"
   elif [[ "$type" == "info" ]]; then
-    echo "${color_blue}${message}${color_reset}"
+    echo -e "${color_blue}${message}${color_reset}"
   else
-    echo "[ERROR] Invalid type specified."
+    echo -e "[ERROR] Invalid type specified."
   fi
 }
 
