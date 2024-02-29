@@ -78,7 +78,7 @@ sudo ufw allow 9090
 sudo ufw allow 9100
 
 # Check if grafana is installed
-check_and_install "grafana" "
+check_and_install "dpkg -l | grep -q grafana" "
   sudo mkdir -p /etc/apt/keyrings/ &&
   wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null &&
   echo deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main | sudo tee -a /etc/apt/sources.list.d/grafana.list &&
