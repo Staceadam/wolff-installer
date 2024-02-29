@@ -1,223 +1,108 @@
 #!/usr/bin/env bash
 
-# run apt update
-# run apt upgrade
+SECONDS=0
 
-# [X] set a static ip address for the machine
-# [X] install wireguard
-#     [] config wireguard to have optional config for fastest surfshark vpn
-# [X] check and install vim
-# [X] install zsh and oh-my-zsh
-# [X] install ripgrep 
-# [X] install htop
-# [X] install git
-# [X] install fail2ban - this automatically bans anything trying to continually log into the system
-# [X] check and install ufw
-
-alert() {
-    # RED='\033[0;31m'
-    # GREEN='\033[0;32m'
-    # YELLOW='\033[0;33m'
-
-    local type="$1"
-    local text="$2"
-    local NC='\033[0m' # No Color
-    local color='\033[0;33m' # No Color
-
-    if [ "$type" == "success" ]; then
-        color='\033[0;32m'
-    elif [ "$type" == "warning" ]; then
-        color='\033[0;31m'
-    elif [ "$type" == "init" ]; then
-        color='!!!!!!!!!!!!!! '
-    else 
-        color='\033[0m'
-    fi
-    
-    echo "${color}${text}${NC}"
+command_exists() {
+  command -v "$@" >/dev/null 2>&1
 }
 
-# Check if Vim is installed
-alert 'init' "Vim"
-if ! command -v vim &> /dev/null
-then
-    alert 'warning' "Vim is not installed. Installing..."
-    # Update package index
-    sudo apt update
-    # Install Vim
-    sudo apt install vim -y
-    alert 'success' "Vim has been installed."
-else
-    alert 'success' "Vim is already installed."
-fi
+color_red='\033[0;31m'
+color_green='\033[0;32m'
+color_blue='\033[0;34m'
+color_reset='\033[0m'
 
-# Check if Zsh is installed
-alert 'init' "Zsh and oh-my-zsh"
-if ! command -v zsh &> /dev/null
-then
-    alert 'warning' "Zsh is not installed."
-    sudo apt install zsh -y
-    sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    alert 'success' "Zsh and oh-myzsh have been installed."
-else
-    alert 'success' "Zsh is installed."
-fi
+function alert() {
+  local type="$1"
+  local message="$2"
+  
+  if [[ "$type" == "warning" ]]; then
+    echo "${color_red}${message}${color_reset}"
+  elif [[ "$type" == "success" ]]; then
+    echo "${color_green}${message}${color_reset}"
+  elif [[ "$type" == "info" ]]; then
+    echo "${color_blue}${message}${color_reset}"
+  else
+    echo "[ERROR] Invalid type specified."
+  fi
+}
+
+function check_and_install() {
+  local command_name="$1"
+  local install_command="$2"
+  local not_installed_message="$command_name is not installed, installing now..."
+  local installed_message="$command_name has been installed."
+
+  alert info "Checking if $command_name is installed..."
+
+  if ! command_exists "$command_name"; then
+    alert warning "$not_installed_message"
+    eval "$install_command"
+    alert success "$installed_message"
+  else
+    alert success "$command_name is already installed."
+  fi
+}
+
+alert info "Checking for system updates."
+sudo apt update 
+sudo apt upgrade
+
+# Check if vim is installed
+check_and_install "vim" "sudo apt install vim -y"
+
+# Check if Zsh and oh-my-zsh is installed
+check_and_install "zsh" "sudo apt install zsh -y; sudo sh -c '$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)'"
 
 # Check if htop is installed
-alert 'init' "htop - process viewer"
-if ! command -v htop &> /dev/null
-then
-    alert 'warning' "htop is not installed. Installing..."
-    # Update package index
-    sudo apt update
-    # Install htop
-    sudo apt install htop -y
-    alert 'success' "htop has been installed."
-else
-    alert 'succes' "htop is already installed."
-fi
+check_and_install "htop" "sudo apt install htop -y"
 
 # Check if git is installed
-alert 'init' "git - source control"
-if ! command -v git &> /dev/null
-then
-    alert 'warning' "git is not installed. Installing..."
-    # Update package index
-    sudo apt update
-    # Install git
-    sudo apt install git -y
-    alert 'success' "git has been installed."
-else
-    alert 'success' "git is already installed."
-fi
+check_and_install "git" "sudo apt install git -y"
 
 # Check if fail2ban is installed
-alert 'init' "fail2ban - ssh auto banner"
-if ! command -v fail2ban &> /dev/null
-then
-    alert 'warning' "fail2ban is not installed. Installing..."
-    # Update package index
-    sudo apt update
-    # Install fail2ban
-    sudo apt install fail2ban -y
-    alert 'success' "fail2ban installed successfully."
-else
-    alert 'success' "fail2ban is already installed."
-fi
+check_and_install "fail2ban" "sudo apt install fail2ban -y"
 
-# Check if UFW is installed
-alert 'init' "ufw - firewall"
-if ! command -v ufw &> /dev/null
-then
-    alert 'warning' "UFW is not installed. Installing..."
-    # Update package index
-    sudo apt update
-    # Install UFW
-    sudo apt install ufw -y
-    alert 'success' "UFW installed successfully."
-else
-    alert 'success' "UFW is already installed."
-fi
-
-# Check if WireGuard is installed
-alert 'init' "wireguard - vpn service"
-if ! command -v wg &> /dev/null
-then
-    alert 'warning' "WireGuard is not installed. Installing..."
-
-    sudo apt update
-    # Install UFW
-    sudo apt install wireguard -y
-
-    # Update package index and install WireGuard
-    alert 'success' "WireGuard installed successfully."
-else
-    alert 'success' "WireGuard is already installed."
-fi
+# Check if ufw is installed
+check_and_install "ufw" "sudo apt install ufw -y"
 
 # Check if ripgrep is installed
-alert 'init' "ripgrep - super fast grep"
-if ! command -v rg &> /dev/null
-then
-    alert 'warning' "ripgrep is not installed. Installing..."
+check_and_install "rg" "sudo apt install ripgrep -y"
 
-    sudo apt update
-    # Install UFW
-    sudo apt install ripgrep -y
+# Check if nginx is installed
+check_and_install "nginx" "sudo apt install ripgrep -y"
 
-    # Update package index and install WireGuard
-    alert 'success' "ripgrep installed successfully."
-else
-    alert 'success' "ripgrep is already installed."
-fi
+# Check if prometheus is installed
+check_and_install "prometheus" "sudo apt install prometheus -y"
+alert info "opening up prometheus ports 9090 and 9100"
+sudo ufw allow 9090
+sudo ufw allow 9100
+
+# Check if grafana is installed
+check_and_install "grafana" "
+  sudo mkdir -p /etc/apt/keyrings/ &&
+  wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null &&
+  echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list &&
+  sudo apt update && sudo apt install grafana 
+"
+alert info "opening up grafana port 3000"
+sudo ufw allow 3000
+
+# Check if wireguard is installed
+check_and_install "wg" "sudo apt install wireguard -y"
+
+# Update packages
+alert info "Attempting to update packages."
+sudo apt update
+
+alert info "Attempting to setup static ip and VPN"
+# TODO: this needs to place and use the chicago conf file and set it up with an alias
 
 
-# Update netplan configuration file
-netplan_file="/etc/netplan/01-netcfg.yaml"
-netplan_static_file="etc/netplan/static.yaml"
+alert info "Attempting to setup network."
+alert info "Setting up static ip address."
+bash ./static_ip.sh
 
-if [ -f "$netplan_static_file" ]; then
-    alert 'success' "Netplan static configuration file found. All done."
-    exit 1
-fi
-
-if [ ! -f "$netplan_file" ]; then
-    alert 'warning' "Netplan configuration file not found: $netplan_file. Exiting"
-    exit 1
-fi
-
-
-# get the interface name
-interface_name=$(ifconfig -lu | tr ' ' '\n' | while read -r interface; do
-    if [[ "$(ifconfig "$interface" 2>/dev/null)" == *"status: active"* ]]; then
-        if [[ "$(ifconfig "$interface" 2>/dev/null)" == *"ether"* ]]; then
-            echo "$interface"
-            break
-        fi
-    fi
-done)
-
-# Get IP address
-ip_address=$(ip route get 1 | awk '{print $NF;exit}')
-
-# Get gateway IP address
-gateway_ip=$(ip route | grep default | awk '{print $3}')
-
-# Print the captured information
-echo "Ethernet Interface: $interface_name"
-echo "IP Address: $ip_address"
-echo "Gateway IP: $gateway_ip"
-
-# Update netplan configuration file
-netplan_file="/etc/netplan/01-netcfg.yaml"
-netplan_static_file="etc/netplan/static.yaml"
-
-if [ ! -f "$netplan_file" ]; then
-    alert 'warning' "Netplan configuration file not found: $netplan_file. Exiting"
-    exit 1
-fi
-
-echo "Updating netplan configuration file: $netplan_file"
-
-# Backup the original file
-sudo cp "$netplan_file" "$netplan_file.bak"
-
-# Delete original file
-sudo rm "$netplan_file" 
-
-# Copy over base config file
-sudo cp "./static.yaml" "$netplan_static_file"
-
-# Update the YAML file with the current IP address
-sed -i "s|<INTERFACE_NAME>|$interface_name|g" "$netplan_static_file" 
-sed -i "s|<IP_ADDRESS>|$ip_address|g" "$netplan_static_file"
-sed -i "s|<GATEWAY_IP>|$gateway_ip|g" config.yaml
-
-# Apply the changes
-sudo netplan apply
-
-alert 'success' "Netplan configuration updated successfully."
-alert 'success' "current config is: "
-sudo cat $netplan_static_file
-
-alert 'warning' "double check this, it can ruin your ssh connection if configurred incorrectly."
+duration=$SECONDS
+minutes=$((duration / 60))
+seconds=$((duration % 60))
+alert success "Install script ran successfully at $minutes:$seconds"

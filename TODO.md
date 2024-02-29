@@ -1,5 +1,10 @@
 - [X] finish static.yaml solution
 - [] finish wireguard config using fastest vpn (probably the chicago one)
+- [] check and setup prometheus and node-exporter
+- [] setup grafana and extend it to include the new machine 
+- [] cron jobs for auto updating every sunday 
+  `crontab -e`
+  add `0 0 * * 0 sudo apt update && sudo apt upgrade -y` to table
 - need to host the text and serve it up over http
 - host this stuff on an express server on the cigarbox
 - add an endpoint that returns the script text as place text
@@ -26,7 +31,9 @@
   });
 
 ```
-
+- another alternative would be to host it on github and hit it like
+`https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/main/install-paperless-ngx.sh` but there might be some private stuff that would be an issue here
+- checkout paperless-ngx and maybe include it in the install script [https://docs.paperless-ngx.com/setup/]
 
 
 
