@@ -1,5 +1,12 @@
 #!/bin/bash
 
+alert info "Attempting to setup static ip and VPN"
+# TODO: this needs to place and use the chicago conf file and set it up with an alias
+
+
+alert info "Attempting to setup network."
+alert info "Setting up static ip address."
+
 # Update netplan configuration file
 netplan_file="/etc/netplan/01-netcfg.yaml"
 netplan_static_file="/etc/netplan/static.yaml"
